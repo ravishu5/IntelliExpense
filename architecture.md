@@ -266,7 +266,11 @@ Themes are bound into Compose using `LocalAppColors` `CompositionLocal`, providi
 2. **Ledger Screen (`TransactionsScreen.kt`)**: Full-text search (merchant, amount, UPI UTR), filter chips (All, Expense, Income, Transfer, Unreviewed), grouped relative dates (*"Today"*, *"Yesterday"*), and edit/delete dialogs.
 3. **Analytics Screen (`AnalyticsScreen.kt`)**: Cash flow summary, category spend distribution bars with percentage metrics, and top merchant ranking.
 4. **Ask Your Money Screen (`AskYourMoneyScreen.kt`)**: Conversational chat interface with quick suggestion chips and structured financial answers.
-5. **Manage Hub (`ManageHubScreen.kt`)**: Multi-tab management for Accounts, Subscriptions, Savings Goals, and Split Bills.
+5. **Manage & Vault Hub (`ManageHubScreen.kt`)**: End-to-end interactive management suite across 4 domains:
+   - **Bank Accounts & Cards**: Dynamic net liquidity banner, card utilization metrics, interactive Add/Edit/Delete modals supporting Banks, Credit Cards (with credit limit and billing days), UPI VPAs, Digital Wallets, and Cash in Hand.
+   - **Subscriptions & Recurring Bills**: Total monthly outflow calculation, active recurring bills tracker, Add/Edit/Delete dialogs with renewal day configuration and linked debited account selector.
+   - **Savings Goals & Funds**: Vault progress visualization, Add/Edit/Delete goal modals, and one-tap "+ Deposit Funds" dialog with quick chips (`+₹500`, `+₹1,000`, `+₹5,000`) and live progress bar updates.
+   - **Split Bills ("Who Owes Me")**: Group shared ledger with dynamic multi-participant creator, "Equal Split" auto-calculator, and interactive ledger dialog featuring one-tap `Paid`/`Pending` status toggles, collected amount summary, and full settlement controls.
 6. **Privacy & Themes Center (`PrivacyCenterScreen.kt`)**: Categorized Theme Selector, zero-cloud verification audit, storage stats, permission matrix, backup export, and emergency data wipe.
 7. **Quick Capture Dialog (`QuickCaptureDialog.kt`)**: Modal sheet with smart natural language text box and manual form.
 8. **Onboarding Carousel (`OnboardingScreen.kt`)**: Initial setup walkthrough highlighting local encryption, zero-friction capture, and on-device intelligence.

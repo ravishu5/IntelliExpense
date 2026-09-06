@@ -194,4 +194,10 @@ interface SplitDao {
 
     @Query("UPDATE splits SET settled = :settled WHERE id = :splitId")
     suspend fun setSplitSettled(splitId: String, settled: Boolean)
+
+    @Query("DELETE FROM splits WHERE id = :splitId")
+    suspend fun deleteSplit(splitId: String)
+
+    @Query("DELETE FROM split_members WHERE splitId = :splitId")
+    suspend fun deleteSplitMembers(splitId: String)
 }

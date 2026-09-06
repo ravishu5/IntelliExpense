@@ -75,6 +75,8 @@ interface FinancialRepository {
     suspend fun getUnsettledMembers(): List<SplitMemberEntity>
     suspend fun saveSplit(split: SplitExpenseEntity, members: List<SplitMemberEntity>)
     suspend fun setMemberPaid(memberId: String, isPaid: Boolean)
+    suspend fun setSplitSettled(splitId: String, settled: Boolean)
+    suspend fun deleteSplit(splitId: String)
 
     // Export & Restore
     suspend fun exportDataJson(): String
@@ -223,6 +225,12 @@ class FinancialRepositoryImpl(
     }
     override suspend fun setMemberPaid(memberId: String, isPaid: Boolean) =
         splitDao.setMemberPaid(memberId, isPaid)
+    override suspend fun setSplitSettled(splitId: String, settled: Boolean) =
+        splitDao.setSplitSettled(splitId, settled)
+    override suspend fun deleteSplit(splitId: String) {
+        splitDao.deleteSplit(splitId)
+        splitDao.deleteSplitMembers(splitId)
+    }
 
     override suspend fun exportDataJson(): String {
         val root = JSONObject()
