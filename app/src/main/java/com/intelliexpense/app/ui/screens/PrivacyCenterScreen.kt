@@ -62,6 +62,9 @@ import com.intelliexpense.app.ui.theme.LocalAppColors
 import com.intelliexpense.app.ui.theme.ThemeMode
 import kotlinx.coroutines.launch
 
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.material3.Scaffold
+
 @Composable
 fun PrivacyCenterScreen(
     privacyManager: PrivacyCenterManager,
@@ -80,30 +83,60 @@ fun PrivacyCenterScreen(
         audit = privacyManager.getPrivacyAudit()
     }
 
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(colors.background)
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        item {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                IconButton(onClick = onBack) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = colors.textPrimary)
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        containerColor = colors.background,
+        topBar = {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(colors.background)
+                    .statusBarsPadding()
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 12.dp, end = 16.dp, top = 14.dp, bottom = 10.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(onClick = onBack) {
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back",
+                            tint = colors.textPrimary
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Column {
+                        Text(
+                            text = "Privacy & Themes",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = colors.textPrimary
+                        )
+                        Text(
+                            text = "Hardware Encryption & Customizer",
+                            fontSize = 12.sp,
+                            color = colors.textSecondary
+                        )
+                    }
                 }
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = "Privacy & Themes",
-                    fontSize = 22.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = colors.textPrimary
-                )
             }
         }
+    ) { innerPadding ->
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            item {
+                Spacer(modifier = Modifier.height(4.dp))
+            }
 
-        // Theme Customizer Card
-        item {
+            // Theme Customizer Card
+            item {
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(22.dp),
@@ -380,6 +413,7 @@ fun PrivacyCenterScreen(
         item {
             Spacer(modifier = Modifier.height(70.dp))
         }
+    }
     }
 
     if (showWipeConfirmation) {
