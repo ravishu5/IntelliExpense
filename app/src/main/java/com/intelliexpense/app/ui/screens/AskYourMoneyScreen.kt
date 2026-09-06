@@ -1,5 +1,6 @@
 package com.intelliexpense.app.ui.screens
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,10 +19,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Lightbulb
 import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -47,12 +48,7 @@ import androidx.compose.ui.unit.sp
 import com.intelliexpense.app.ai.AiResponse
 import com.intelliexpense.app.ai.AskYourMoneyEngine
 import com.intelliexpense.app.data.repository.FinancialRepository
-import com.intelliexpense.app.ui.theme.CardBorder
-import com.intelliexpense.app.ui.theme.Emerald500
-import com.intelliexpense.app.ui.theme.Slate400
-import com.intelliexpense.app.ui.theme.Slate800
-import com.intelliexpense.app.ui.theme.Slate850
-import com.intelliexpense.app.ui.theme.Slate900
+import com.intelliexpense.app.ui.theme.LocalAppColors
 
 data class ChatMessage(
     val id: String,
@@ -66,6 +62,8 @@ fun AskYourMoneyScreen(
     repository: FinancialRepository,
     aiEngine: AskYourMoneyEngine
 ) {
+    val colors = LocalAppColors.current
+
     val transactions by repository.getAllTransactionsFlow().collectAsState(initial = emptyList())
     val accounts by repository.getAllAccountsFlow().collectAsState(initial = emptyList())
     val categories by repository.getAllCategoriesFlow().collectAsState(initial = emptyList())
@@ -120,7 +118,7 @@ fun AskYourMoneyScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Slate900)
+            .background(colors.background)
             .padding(16.dp)
     ) {
         // Top Header
@@ -134,30 +132,30 @@ fun AskYourMoneyScreen(
                     text = "Ask Your Money",
                     fontSize = 22.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White
+                    color = colors.textPrimary
                 )
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.Lock, contentDescription = null, tint = Emerald500, modifier = Modifier.size(12.dp))
+                    Icon(Icons.Default.Lock, contentDescription = null, tint = colors.primary, modifier = Modifier.size(12.dp))
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
                         text = "100% Local Intelligence • Zero Cloud Storage",
                         fontSize = 11.sp,
-                        color = Emerald500,
-                        fontWeight = FontWeight.Medium
+                        color = colors.primary,
+                        fontWeight = FontWeight.SemiBold
                     )
                 }
             }
             Box(
                 modifier = Modifier
-                    .size(36.dp)
-                    .background(Emerald500.copy(alpha = 0.15f), CircleShape),
+                    .size(40.dp)
+                    .background(colors.primary.copy(alpha = 0.15f), CircleShape),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(Icons.Default.AutoAwesome, contentDescription = null, tint = Emerald500, modifier = Modifier.size(20.dp))
+                Icon(Icons.Default.AutoAwesome, contentDescription = null, tint = colors.primary, modifier = Modifier.size(20.dp))
             }
         }
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(14.dp))
 
         // Quick Suggestion Chips
         LazyRow(
@@ -169,18 +167,19 @@ fun AskYourMoneyScreen(
                     onClick = { sendQuery(prompt) },
                     label = { Text(prompt, fontSize = 12.sp) },
                     colors = SuggestionChipDefaults.suggestionChipColors(
-                        containerColor = Slate850,
-                        labelColor = Slate400
+                        containerColor = colors.surface,
+                        labelColor = colors.textSecondary
                     ),
                     border = SuggestionChipDefaults.suggestionChipBorder(
-                        borderColor = CardBorder,
+                        borderColor = colors.cardBorder,
                         enabled = true
-                    )
+                    ),
+                    shape = RoundedCornerShape(12.dp)
                 )
             }
         }
 
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
         // Message Thread
         LazyColumn(
@@ -197,15 +196,15 @@ fun AskYourMoneyScreen(
                         horizontalArrangement = Arrangement.End
                     ) {
                         Card(
-                            shape = RoundedCornerShape(18.dp),
-                            colors = CardDefaults.cardColors(containerColor = Emerald500)
+                            shape = RoundedCornerShape(20.dp),
+                            colors = CardDefaults.cardColors(containerColor = colors.primary)
                         ) {
                             Text(
                                 text = msg.text,
                                 color = Color.Black,
-                                fontWeight = FontWeight.SemiBold,
+                                fontWeight = FontWeight.Bold,
                                 fontSize = 14.sp,
-                                modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp)
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 11.dp)
                             )
                         }
                     }
@@ -213,31 +212,31 @@ fun AskYourMoneyScreen(
                     // AI Response Card
                     Card(
                         modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(20.dp),
-                        colors = CardDefaults.cardColors(containerColor = Slate850),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, CardBorder)
+                        shape = RoundedCornerShape(22.dp),
+                        colors = CardDefaults.cardColors(containerColor = colors.surface),
+                        border = BorderStroke(1.dp, colors.cardBorder)
                     ) {
-                        Column(modifier = Modifier.padding(16.dp)) {
+                        Column(modifier = Modifier.padding(18.dp)) {
                             msg.aiResponse?.let { resp ->
                                 Text(
                                     text = resp.title,
                                     fontSize = 15.sp,
                                     fontWeight = FontWeight.Bold,
-                                    color = Emerald500
+                                    color = colors.primary
                                 )
                                 Spacer(modifier = Modifier.height(6.dp))
                             }
 
                             Text(
                                 text = msg.text,
-                                color = Color.White,
+                                color = colors.textPrimary,
                                 fontSize = 14.sp,
-                                lineHeight = 20.sp
+                                lineHeight = 21.sp
                             )
 
                             // Key Metrics Row
                             msg.aiResponse?.keyMetrics?.takeIf { it.isNotEmpty() }?.let { metrics ->
-                                Spacer(modifier = Modifier.height(12.dp))
+                                Spacer(modifier = Modifier.height(14.dp))
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
                                     horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -246,12 +245,12 @@ fun AskYourMoneyScreen(
                                         Box(
                                             modifier = Modifier
                                                 .weight(1f)
-                                                .background(Slate800, RoundedCornerShape(10.dp))
-                                                .padding(8.dp)
+                                                .background(colors.surfaceElevated, RoundedCornerShape(12.dp))
+                                                .padding(10.dp)
                                         ) {
                                             Column {
-                                                Text(metric.label, fontSize = 10.sp, color = Slate400)
-                                                Text(metric.value, fontSize = 13.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                                                Text(metric.label, fontSize = 10.sp, color = colors.textSecondary)
+                                                Text(metric.value, fontSize = 13.sp, fontWeight = FontWeight.Bold, color = colors.textPrimary)
                                             }
                                         }
                                     }
@@ -260,36 +259,36 @@ fun AskYourMoneyScreen(
 
                             // Breakdown Items
                             msg.aiResponse?.breakdownItems?.takeIf { it.isNotEmpty() }?.let { items ->
-                                Spacer(modifier = Modifier.height(12.dp))
+                                Spacer(modifier = Modifier.height(14.dp))
                                 items.forEach { item ->
                                     Row(
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .padding(vertical = 3.dp),
+                                            .padding(vertical = 4.dp),
                                         horizontalArrangement = Arrangement.SpaceBetween
                                     ) {
                                         Column {
-                                            Text(item.title, fontSize = 13.sp, color = Color.White)
-                                            Text(item.subtitle, fontSize = 11.sp, color = Slate400)
+                                            Text(item.title, fontSize = 13.sp, color = colors.textPrimary, fontWeight = FontWeight.Medium)
+                                            Text(item.subtitle, fontSize = 11.sp, color = colors.textSecondary)
                                         }
-                                        Text(item.amount, fontSize = 13.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                                        Text(item.amount, fontSize = 13.sp, fontWeight = FontWeight.Bold, color = colors.textPrimary)
                                     }
                                 }
                             }
 
                             // Actionable Tip
                             msg.aiResponse?.actionableTip?.let { tip ->
-                                Spacer(modifier = Modifier.height(12.dp))
+                                Spacer(modifier = Modifier.height(14.dp))
                                 Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .background(Slate800, RoundedCornerShape(10.dp))
-                                        .padding(10.dp),
+                                        .background(colors.surfaceElevated, RoundedCornerShape(12.dp))
+                                        .padding(12.dp),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    Icon(Icons.Default.Lightbulb, contentDescription = null, tint = Emerald500, modifier = Modifier.size(16.dp))
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    Text(tip, fontSize = 12.sp, color = Slate400)
+                                    Icon(Icons.Default.Lightbulb, contentDescription = null, tint = colors.accentAmber, modifier = Modifier.size(18.dp))
+                                    Spacer(modifier = Modifier.width(10.dp))
+                                    Text(tip, fontSize = 12.sp, color = colors.textSecondary, lineHeight = 17.sp)
                                 }
                             }
                         }
@@ -298,7 +297,7 @@ fun AskYourMoneyScreen(
             }
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(10.dp))
 
         // Bottom Input Row
         Row(
@@ -309,26 +308,26 @@ fun AskYourMoneyScreen(
                 value = inputText,
                 onValueChange = { inputText = it },
                 modifier = Modifier.weight(1f),
-                placeholder = { Text("Ask about expenses, budgets, savings...", color = Slate400, fontSize = 13.sp) },
+                placeholder = { Text("Ask about expenses, budgets, savings...", color = colors.textSecondary, fontSize = 13.sp) },
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Emerald500,
-                    unfocusedBorderColor = Slate800,
-                    focusedTextColor = Color.White,
-                    unfocusedTextColor = Color.White,
-                    focusedContainerColor = Slate850,
-                    unfocusedContainerColor = Slate850
+                    focusedBorderColor = colors.primary,
+                    unfocusedBorderColor = colors.cardBorder,
+                    focusedTextColor = colors.textPrimary,
+                    unfocusedTextColor = colors.textPrimary,
+                    focusedContainerColor = colors.surface,
+                    unfocusedContainerColor = colors.surface
                 ),
-                shape = RoundedCornerShape(16.dp),
+                shape = RoundedCornerShape(18.dp),
                 maxLines = 2
             )
-            Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.width(10.dp))
             IconButton(
                 onClick = { sendQuery(inputText) },
                 modifier = Modifier
-                    .size(48.dp)
-                    .background(Emerald500, CircleShape)
+                    .size(50.dp)
+                    .background(colors.primary, CircleShape)
             ) {
-                Icon(Icons.Default.Send, contentDescription = "Send", tint = Color.Black, modifier = Modifier.size(20.dp))
+                Icon(Icons.AutoMirrored.Filled.Send, contentDescription = "Send", tint = Color.Black, modifier = Modifier.size(20.dp))
             }
         }
 

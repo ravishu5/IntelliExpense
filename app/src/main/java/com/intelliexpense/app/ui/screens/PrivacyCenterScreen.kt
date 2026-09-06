@@ -1,7 +1,10 @@
 package com.intelliexpense.app.ui.screens
 
 import android.widget.Toast
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,14 +20,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.CloudOff
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.ColorLens
 import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.FileDownload
 import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.Security
+import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Shield
-import androidx.compose.material.icons.filled.Sms
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -32,7 +35,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
@@ -47,6 +49,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -55,23 +58,20 @@ import androidx.compose.ui.unit.sp
 import com.intelliexpense.app.data.repository.FinancialRepository
 import com.intelliexpense.app.privacy.PrivacyAudit
 import com.intelliexpense.app.privacy.PrivacyCenterManager
-import com.intelliexpense.app.ui.theme.Amber500
-import com.intelliexpense.app.ui.theme.CardBorder
-import com.intelliexpense.app.ui.theme.Emerald500
-import com.intelliexpense.app.ui.theme.Rose500
-import com.intelliexpense.app.ui.theme.Slate400
-import com.intelliexpense.app.ui.theme.Slate800
-import com.intelliexpense.app.ui.theme.Slate850
-import com.intelliexpense.app.ui.theme.Slate900
+import com.intelliexpense.app.ui.theme.LocalAppColors
+import com.intelliexpense.app.ui.theme.ThemeMode
 import kotlinx.coroutines.launch
 
 @Composable
 fun PrivacyCenterScreen(
     privacyManager: PrivacyCenterManager,
     repository: FinancialRepository,
+    currentTheme: ThemeMode,
+    onThemeSelected: (ThemeMode) -> Unit,
     onBack: () -> Unit
 ) {
     val context = LocalContext.current
+    val colors = LocalAppColors.current
     val coroutineScope = rememberCoroutineScope()
     var audit by remember { mutableStateOf<PrivacyAudit?>(null) }
     var showWipeConfirmation by remember { mutableStateOf(false) }
@@ -83,22 +83,126 @@ fun PrivacyCenterScreen(
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .background(Slate900)
+            .background(colors.background)
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         item {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 IconButton(onClick = onBack) {
-                    Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.White)
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = colors.textPrimary)
                 }
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "Privacy Center",
+                    text = "Privacy & Themes",
                     fontSize = 22.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White
+                    color = colors.textPrimary
                 )
+            }
+        }
+
+        // Theme Customizer Card
+        item {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(22.dp),
+                colors = CardDefaults.cardColors(containerColor = colors.surface),
+                border = BorderStroke(1.dp, colors.cardBorder)
+            ) {
+                Column(modifier = Modifier.padding(20.dp)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Box(
+                                modifier = Modifier
+                                    .size(36.dp)
+                                    .background(colors.primary.copy(alpha = 0.15f), CircleShape),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(Icons.Default.Palette, contentDescription = null, tint = colors.primary, modifier = Modifier.size(20.dp))
+                            }
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Column {
+                                Text("Fintech Theme Pack", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = colors.textPrimary)
+                                Text("Choose your luxury aesthetic", fontSize = 12.sp, color = colors.textSecondary)
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    ThemeMode.entries.forEach { mode ->
+                        val isSelected = currentTheme == mode
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 4.dp)
+                                .clickable { onThemeSelected(mode) },
+                            shape = RoundedCornerShape(14.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = if (isSelected) colors.surfaceElevated else colors.background
+                            ),
+                            border = BorderStroke(
+                                1.5.dp,
+                                if (isSelected) colors.primary else colors.cardBorder
+                            )
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(14.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    // Color swatch preview circle
+                                    Box(
+                                        modifier = Modifier
+                                            .size(28.dp)
+                                            .clip(CircleShape)
+                                            .background(mode.previewBackground)
+                                            .border(2.dp, mode.previewPrimary, CircleShape),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Box(
+                                            modifier = Modifier
+                                                .size(10.dp)
+                                                .clip(CircleShape)
+                                                .background(mode.previewPrimary)
+                                        )
+                                    }
+                                    Spacer(modifier = Modifier.width(12.dp))
+                                    Column {
+                                        Text(
+                                            mode.displayName,
+                                            fontSize = 14.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = colors.textPrimary
+                                        )
+                                        Text(
+                                            mode.subtitle,
+                                            fontSize = 11.sp,
+                                            color = colors.textSecondary
+                                        )
+                                    }
+                                }
+
+                                if (isSelected) {
+                                    Icon(
+                                        Icons.Default.Check,
+                                        contentDescription = "Selected",
+                                        tint = colors.primary,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -107,23 +211,23 @@ fun PrivacyCenterScreen(
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(22.dp),
-                colors = CardDefaults.cardColors(containerColor = Slate850),
-                border = androidx.compose.foundation.BorderStroke(1.dp, Emerald500.copy(alpha = 0.5f))
+                colors = CardDefaults.cardColors(containerColor = colors.surface),
+                border = BorderStroke(1.dp, colors.cardBorderGlow)
             ) {
                 Column(modifier = Modifier.padding(20.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Box(
                             modifier = Modifier
                                 .size(42.dp)
-                                .background(Emerald500.copy(alpha = 0.15f), CircleShape),
+                                .background(colors.primary.copy(alpha = 0.15f), CircleShape),
                             contentAlignment = Alignment.Center
                         ) {
-                            Icon(Icons.Default.Shield, contentDescription = null, tint = Emerald500, modifier = Modifier.size(24.dp))
+                            Icon(Icons.Default.Shield, contentDescription = null, tint = colors.primary, modifier = Modifier.size(24.dp))
                         }
                         Spacer(modifier = Modifier.width(14.dp))
                         Column {
-                            Text("Privacy-First & Local-Only", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.White)
-                            Text("Zero telemetry • Zero cloud servers", fontSize = 12.sp, color = Emerald500)
+                            Text("Privacy-First & Local-Only", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = colors.textPrimary)
+                            Text("Zero telemetry • Zero cloud servers", fontSize = 12.sp, color = colors.primary)
                         }
                     }
 
@@ -132,8 +236,8 @@ fun PrivacyCenterScreen(
                     Text(
                         text = "IntelliExpense never transmits your financial data, UPI references, or SMS messages to external servers or cloud AI models. Everything is processed and stored 100% locally on this device.",
                         fontSize = 13.sp,
-                        color = Slate400,
-                        lineHeight = 18.sp
+                        color = colors.textSecondary,
+                        lineHeight = 19.sp
                     )
                 }
             }
@@ -143,54 +247,54 @@ fun PrivacyCenterScreen(
         item {
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(18.dp),
-                colors = CardDefaults.cardColors(containerColor = Slate850),
-                border = androidx.compose.foundation.BorderStroke(1.dp, CardBorder)
+                shape = RoundedCornerShape(20.dp),
+                colors = CardDefaults.cardColors(containerColor = colors.surface),
+                border = BorderStroke(1.dp, colors.cardBorder)
             ) {
                 Column(modifier = Modifier.padding(18.dp)) {
-                    Text("Local Security & Storage", fontSize = 15.sp, fontWeight = FontWeight.SemiBold, color = Color.White)
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Text("Local Security & Storage", fontSize = 15.sp, fontWeight = FontWeight.SemiBold, color = colors.textPrimary)
+                    Spacer(modifier = Modifier.height(14.dp))
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text("Database Encryption", fontSize = 13.sp, color = Slate400)
-                        Text("SQLCipher 256-Bit AES", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = Emerald500)
+                        Text("Database Encryption", fontSize = 13.sp, color = colors.textSecondary)
+                        Text("SQLCipher 256-Bit AES", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = colors.incomeGreen)
                     }
 
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(10.dp))
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text("Master Key Storage", fontSize = 13.sp, color = Slate400)
-                        Text("Android Keystore (Hardware)", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                        Text("Master Key Storage", fontSize = 13.sp, color = colors.textSecondary)
+                        Text("Android Keystore (Hardware)", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = colors.textPrimary)
                     }
 
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(10.dp))
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text("Cloud Account Required", fontSize = 13.sp, color = Slate400)
-                        Text("No (100% Anonymous)", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = Emerald500)
+                        Text("Cloud Account Required", fontSize = 13.sp, color = colors.textSecondary)
+                        Text("No (100% Anonymous)", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = colors.primary)
                     }
 
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(10.dp))
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text("Stored Transactions", fontSize = 13.sp, color = Slate400)
-                        Text("${audit?.totalTransactionsStored ?: 0} records", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                        Text("Stored Transactions", fontSize = 13.sp, color = colors.textSecondary)
+                        Text("${audit?.totalTransactionsStored ?: 0} records", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = colors.textPrimary)
                     }
                 }
             }
@@ -200,12 +304,12 @@ fun PrivacyCenterScreen(
         item {
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(18.dp),
-                colors = CardDefaults.cardColors(containerColor = Slate850),
-                border = androidx.compose.foundation.BorderStroke(1.dp, CardBorder)
+                shape = RoundedCornerShape(20.dp),
+                colors = CardDefaults.cardColors(containerColor = colors.surface),
+                border = BorderStroke(1.dp, colors.cardBorder)
             ) {
                 Column(modifier = Modifier.padding(18.dp)) {
-                    Text("Optional Permissions", fontSize = 15.sp, fontWeight = FontWeight.SemiBold, color = Color.White)
+                    Text("Optional Permissions", fontSize = 15.sp, fontWeight = FontWeight.SemiBold, color = colors.textPrimary)
                     Spacer(modifier = Modifier.height(10.dp))
 
                     Row(
@@ -214,11 +318,11 @@ fun PrivacyCenterScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Column(modifier = Modifier.weight(1f)) {
-                            Text("SMS Transaction Detection", fontSize = 14.sp, fontWeight = FontWeight.Medium, color = Color.White)
+                            Text("SMS Transaction Detection", fontSize = 14.sp, fontWeight = FontWeight.Medium, color = colors.textPrimary)
                             Text(
                                 "Strictly filters only debit/credit messages from bank sender codes; ignores all OTPs and spam.",
                                 fontSize = 11.sp,
-                                color = Slate400
+                                color = colors.textSecondary
                             )
                         }
                         Switch(
@@ -226,7 +330,7 @@ fun PrivacyCenterScreen(
                             onCheckedChange = {
                                 Toast.makeText(context, "Manage in Android App Settings", Toast.LENGTH_SHORT).show()
                             },
-                            colors = SwitchDefaults.colors(checkedThumbColor = Emerald500)
+                            colors = SwitchDefaults.colors(checkedThumbColor = colors.primary)
                         )
                     }
                 }
@@ -237,12 +341,12 @@ fun PrivacyCenterScreen(
         item {
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(18.dp),
-                colors = CardDefaults.cardColors(containerColor = Slate850),
-                border = androidx.compose.foundation.BorderStroke(1.dp, CardBorder)
+                shape = RoundedCornerShape(20.dp),
+                colors = CardDefaults.cardColors(containerColor = colors.surface),
+                border = BorderStroke(1.dp, colors.cardBorder)
             ) {
                 Column(modifier = Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Text("Data Ownership & Controls", fontSize = 15.sp, fontWeight = FontWeight.SemiBold, color = Color.White)
+                    Text("Data Ownership & Controls", fontSize = 15.sp, fontWeight = FontWeight.SemiBold, color = colors.textPrimary)
 
                     OutlinedButton(
                         onClick = {
@@ -252,22 +356,22 @@ fun PrivacyCenterScreen(
                             }
                         },
                         modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp)
+                        shape = RoundedCornerShape(14.dp)
                     ) {
-                        Icon(Icons.Default.FileDownload, contentDescription = null, tint = Emerald500)
+                        Icon(Icons.Default.FileDownload, contentDescription = null, tint = colors.primary)
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("Export Encrypted Backup (JSON)", color = Color.White)
+                        Text("Export Encrypted Backup (JSON)", color = colors.textPrimary)
                     }
 
                     Button(
                         onClick = { showWipeConfirmation = true },
                         modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(containerColor = Rose500.copy(alpha = 0.2f)),
-                        shape = RoundedCornerShape(12.dp)
+                        colors = ButtonDefaults.buttonColors(containerColor = colors.expenseRed.copy(alpha = 0.2f)),
+                        shape = RoundedCornerShape(14.dp)
                     ) {
-                        Icon(Icons.Default.DeleteForever, contentDescription = null, tint = Rose500)
+                        Icon(Icons.Default.DeleteForever, contentDescription = null, tint = colors.expenseRed)
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("Wipe All Financial Data", color = Rose500, fontWeight = FontWeight.Bold)
+                        Text("Wipe All Financial Data", color = colors.expenseRed, fontWeight = FontWeight.Bold)
                     }
                 }
             }
@@ -281,11 +385,11 @@ fun PrivacyCenterScreen(
     if (showWipeConfirmation) {
         AlertDialog(
             onDismissRequest = { showWipeConfirmation = false },
-            title = { Text("Erase All Data?", color = Color.White, fontWeight = FontWeight.Bold) },
+            title = { Text("Erase All Data?", color = colors.textPrimary, fontWeight = FontWeight.Bold) },
             text = {
                 Text(
                     "This will permanently delete all transactions, accounts, and history stored locally on your device. This cannot be undone.",
-                    color = Slate400
+                    color = colors.textSecondary
                 )
             },
             confirmButton = {
@@ -298,17 +402,17 @@ fun PrivacyCenterScreen(
                             Toast.makeText(context, "All data wiped successfully.", Toast.LENGTH_SHORT).show()
                         }
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = Rose500)
+                    colors = ButtonDefaults.buttonColors(containerColor = colors.expenseRed)
                 ) {
                     Text("Permanently Delete", color = Color.White)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showWipeConfirmation = false }) {
-                    Text("Cancel", color = Slate400)
+                    Text("Cancel", color = colors.textSecondary)
                 }
             },
-            containerColor = Slate850
+            containerColor = colors.surface
         )
     }
 }

@@ -57,14 +57,7 @@ import com.intelliexpense.app.core.util.IndianCurrencyFormatter
 import com.intelliexpense.app.data.model.TransactionEntity
 import com.intelliexpense.app.data.repository.FinancialRepository
 import com.intelliexpense.app.ui.components.TransactionItemRow
-import com.intelliexpense.app.ui.theme.Amber500
-import com.intelliexpense.app.ui.theme.CardBorder
-import com.intelliexpense.app.ui.theme.Emerald500
-import com.intelliexpense.app.ui.theme.Rose500
-import com.intelliexpense.app.ui.theme.Slate400
-import com.intelliexpense.app.ui.theme.Slate800
-import com.intelliexpense.app.ui.theme.Slate850
-import com.intelliexpense.app.ui.theme.Slate900
+import com.intelliexpense.app.ui.theme.LocalAppColors
 import kotlinx.coroutines.launch
 
 @Composable
@@ -72,6 +65,7 @@ fun TransactionsScreen(
     repository: FinancialRepository,
     initialFilterUnreviewed: Boolean = false
 ) {
+    val colors = LocalAppColors.current
     val coroutineScope = rememberCoroutineScope()
     val allTransactions by repository.getAllTransactionsFlow().collectAsState(initial = emptyList())
     val accounts by repository.getAllAccountsFlow().collectAsState(initial = emptyList())
@@ -114,14 +108,14 @@ fun TransactionsScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { showQuickCapture = true },
-                containerColor = Emerald500,
-                contentColor = Color.Black,
+                containerColor = colors.primary,
+                contentColor = if (colors.isDark) Color.Black else Color.White,
                 shape = CircleShape
             ) {
                 Icon(Icons.Default.Add, contentDescription = "Add Expense", modifier = Modifier.size(28.dp))
             }
         },
-        containerColor = Slate900
+        containerColor = colors.background
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -135,7 +129,7 @@ fun TransactionsScreen(
                 text = "Transaction Ledger",
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.White
+                color = colors.textPrimary
             )
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -145,22 +139,22 @@ fun TransactionsScreen(
                 value = searchQuery,
                 onValueChange = { searchQuery = it },
                 modifier = Modifier.fillMaxWidth(),
-                placeholder = { Text("Search merchant, amount, UPI ref...", color = Slate400, fontSize = 13.sp) },
-                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = Slate400) },
+                placeholder = { Text("Search merchant, amount, UPI ref...", color = colors.textSecondary, fontSize = 13.sp) },
+                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = colors.textSecondary) },
                 trailingIcon = {
                     if (searchQuery.isNotEmpty()) {
                         IconButton(onClick = { searchQuery = "" }) {
-                            Icon(Icons.Default.Close, contentDescription = "Clear", tint = Slate400)
+                            Icon(Icons.Default.Close, contentDescription = "Clear", tint = colors.textSecondary)
                         }
                     }
                 },
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Emerald500,
-                    unfocusedBorderColor = Slate800,
-                    focusedTextColor = Color.White,
-                    unfocusedTextColor = Color.White,
-                    focusedContainerColor = Slate850,
-                    unfocusedContainerColor = Slate850
+                    focusedBorderColor = colors.primary,
+                    unfocusedBorderColor = colors.cardBorder,
+                    focusedTextColor = colors.textPrimary,
+                    unfocusedTextColor = colors.textPrimary,
+                    focusedContainerColor = colors.surface,
+                    unfocusedContainerColor = colors.surface
                 ),
                 shape = RoundedCornerShape(14.dp),
                 singleLine = true
@@ -176,13 +170,13 @@ fun TransactionsScreen(
                         onClick = { selectedFilter = filter },
                         label = { Text(filter, fontSize = 12.sp) },
                         colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = Emerald500,
-                            selectedLabelColor = Color.Black,
-                            containerColor = Slate850,
-                            labelColor = Slate400
+                            selectedContainerColor = colors.primary,
+                            selectedLabelColor = if (colors.isDark) Color.Black else Color.White,
+                            containerColor = colors.surface,
+                            labelColor = colors.textSecondary
                         ),
                         border = FilterChipDefaults.filterChipBorder(
-                            borderColor = if (selectedFilter == filter) Emerald500 else CardBorder,
+                            borderColor = if (selectedFilter == filter) colors.primary else colors.cardBorder,
                             enabled = true,
                             selected = selectedFilter == filter
                         )
@@ -200,7 +194,7 @@ fun TransactionsScreen(
                         .padding(top = 80.dp),
                     contentAlignment = Alignment.TopCenter
                 ) {
-                    Text("No transactions matching your criteria.", color = Slate400, fontSize = 14.sp)
+                    Text("No transactions matching your criteria.", color = colors.textSecondary, fontSize = 14.sp)
                 }
             } else {
                 LazyColumn(
@@ -213,7 +207,7 @@ fun TransactionsScreen(
                                 text = dateHeader,
                                 fontSize = 13.sp,
                                 fontWeight = FontWeight.SemiBold,
-                                color = Slate400,
+                                color = colors.textSecondary,
                                 modifier = Modifier.padding(top = 10.dp, bottom = 4.dp)
                             )
                         }
@@ -237,19 +231,19 @@ fun TransactionsScreen(
         AlertDialog(
             onDismissRequest = { selectedTxnForDetail = null },
             title = {
-                Text(txn.merchantNormalized, color = Color.White, fontWeight = FontWeight.Bold)
+                Text(txn.merchantNormalized, color = colors.textPrimary, fontWeight = FontWeight.Bold)
             },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text("Amount: ${IndianCurrencyFormatter.format(txn.amount)}", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Emerald500)
-                    Text("Type: ${txn.type.displayName}", color = Slate400, fontSize = 13.sp)
-                    Text("Category: ${txn.categoryId.replace('_', ' ')}", color = Slate400, fontSize = 13.sp)
-                    Text("Payment Method: ${txn.paymentMethod}", color = Slate400, fontSize = 13.sp)
-                    Text("Captured From: ${txn.captureSource.displayName}", color = Slate400, fontSize = 13.sp)
-                    txn.upiReference?.let { Text("UPI Ref (UTR): $it", color = Slate400, fontSize = 13.sp) }
-                    Text("Date: ${DateUtils.formatFullDateTime(txn.timestamp)}", color = Slate400, fontSize = 13.sp)
+                    Text("Amount: ${IndianCurrencyFormatter.format(txn.amount)}", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = colors.primary)
+                    Text("Type: ${txn.type.displayName}", color = colors.textSecondary, fontSize = 13.sp)
+                    Text("Category: ${txn.categoryId.replace('_', ' ')}", color = colors.textSecondary, fontSize = 13.sp)
+                    Text("Payment Method: ${txn.paymentMethod}", color = colors.textSecondary, fontSize = 13.sp)
+                    Text("Captured From: ${txn.captureSource.displayName}", color = colors.textSecondary, fontSize = 13.sp)
+                    txn.upiReference?.let { Text("UPI Ref (UTR): $it", color = colors.textSecondary, fontSize = 13.sp) }
+                    Text("Date: ${DateUtils.formatFullDateTime(txn.timestamp)}", color = colors.textSecondary, fontSize = 13.sp)
                     if (!txn.isReviewed) {
-                        Text("Status: Needs Review", color = Amber500, fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                        Text("Status: Needs Review", color = colors.accentAmber, fontWeight = FontWeight.Bold, fontSize = 13.sp)
                     }
                 }
             },
@@ -262,13 +256,13 @@ fun TransactionsScreen(
                                 selectedTxnForDetail = null
                             }
                         },
-                        colors = ButtonDefaults.buttonColors(containerColor = Emerald500)
+                        colors = ButtonDefaults.buttonColors(containerColor = colors.primary)
                     ) {
-                        Text("Confirm & Verify", color = Color.Black, fontWeight = FontWeight.Bold)
+                        Text("Confirm & Verify", color = if (colors.isDark) Color.Black else Color.White, fontWeight = FontWeight.Bold)
                     }
                 } else {
                     TextButton(onClick = { selectedTxnForDetail = null }) {
-                        Text("Close", color = Emerald500)
+                        Text("Close", color = colors.primary)
                     }
                 }
             },
@@ -281,10 +275,10 @@ fun TransactionsScreen(
                         }
                     }
                 ) {
-                    Text("Delete", color = Rose500)
+                    Text("Delete", color = colors.expenseRed)
                 }
             },
-            containerColor = Slate850
+            containerColor = colors.surface
         )
     }
 

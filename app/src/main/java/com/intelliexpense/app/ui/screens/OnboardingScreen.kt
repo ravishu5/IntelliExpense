@@ -37,11 +37,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.intelliexpense.app.ui.theme.Emerald500
-import com.intelliexpense.app.ui.theme.Slate400
-import com.intelliexpense.app.ui.theme.Slate800
-import com.intelliexpense.app.ui.theme.Slate850
-import com.intelliexpense.app.ui.theme.Slate900
+import com.intelliexpense.app.ui.theme.LocalAppColors
 
 data class OnboardingStep(
     val title: String,
@@ -52,6 +48,7 @@ data class OnboardingStep(
 
 @Composable
 fun OnboardingScreen(onFinish: () -> Unit) {
+    val colors = LocalAppColors.current
     var stepIndex by remember { mutableIntStateOf(0) }
 
     val steps = listOf(
@@ -80,7 +77,7 @@ fun OnboardingScreen(onFinish: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Slate900)
+            .background(colors.background)
             .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
@@ -91,7 +88,8 @@ fun OnboardingScreen(onFinish: () -> Unit) {
         Card(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(24.dp),
-            colors = CardDefaults.cardColors(containerColor = Slate850)
+            colors = CardDefaults.cardColors(containerColor = colors.surface),
+            border = androidx.compose.foundation.BorderStroke(1.dp, colors.cardBorder)
         ) {
             Column(
                 modifier = Modifier.padding(28.dp),
@@ -100,13 +98,13 @@ fun OnboardingScreen(onFinish: () -> Unit) {
                 Box(
                     modifier = Modifier
                         .size(80.dp)
-                        .background(Emerald500.copy(alpha = 0.15f), CircleShape),
+                        .background(colors.primary.copy(alpha = 0.15f), CircleShape),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         currentStep.icon,
                         contentDescription = null,
-                        tint = Emerald500,
+                        tint = colors.primary,
                         modifier = Modifier.size(40.dp)
                     )
                 }
@@ -115,13 +113,13 @@ fun OnboardingScreen(onFinish: () -> Unit) {
 
                 Box(
                     modifier = Modifier
-                        .background(Emerald500.copy(alpha = 0.2f), RoundedCornerShape(8.dp))
+                        .background(colors.primary.copy(alpha = 0.2f), RoundedCornerShape(8.dp))
                         .padding(horizontal = 10.dp, vertical = 4.dp)
                 ) {
                     Text(
                         text = currentStep.badge,
                         fontSize = 11.sp,
-                        color = Emerald500,
+                        color = colors.primary,
                         fontWeight = FontWeight.Bold
                     )
                 }
@@ -132,7 +130,7 @@ fun OnboardingScreen(onFinish: () -> Unit) {
                     text = currentStep.title,
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White,
+                    color = colors.textPrimary,
                     textAlign = TextAlign.Center
                 )
 
@@ -141,7 +139,7 @@ fun OnboardingScreen(onFinish: () -> Unit) {
                 Text(
                     text = currentStep.description,
                     fontSize = 14.sp,
-                    color = Slate400,
+                    color = colors.textSecondary,
                     textAlign = TextAlign.Center,
                     lineHeight = 22.sp
                 )
@@ -160,7 +158,7 @@ fun OnboardingScreen(onFinish: () -> Unit) {
                             .height(6.dp)
                             .width(if (stepIndex == i) 24.dp else 8.dp)
                             .background(
-                                if (stepIndex == i) Emerald500 else Slate800,
+                                if (stepIndex == i) colors.primary else colors.surfaceElevated,
                                 RoundedCornerShape(3.dp)
                             )
                     )
@@ -180,12 +178,12 @@ fun OnboardingScreen(onFinish: () -> Unit) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(52.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Emerald500),
+                colors = ButtonDefaults.buttonColors(containerColor = colors.primary),
                 shape = RoundedCornerShape(16.dp)
             ) {
                 Text(
                     text = if (stepIndex == steps.size - 1) "Enter IntelliExpense" else "Continue",
-                    color = Color.Black,
+                    color = if (colors.isDark) Color.Black else Color.White,
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp
                 )

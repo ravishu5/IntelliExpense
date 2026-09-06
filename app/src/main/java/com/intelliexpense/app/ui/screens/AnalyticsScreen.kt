@@ -1,5 +1,6 @@
 package com.intelliexpense.app.ui.screens
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,12 +17,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.TrendingDown
+import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.CreditCard
 import androidx.compose.material.icons.filled.PieChart
-import androidx.compose.material.icons.filled.TrendingDown
-import androidx.compose.material.icons.filled.TrendingUp
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -42,19 +43,13 @@ import com.intelliexpense.app.analytics.CreditCardManager
 import com.intelliexpense.app.analytics.SpendingAnalyticsEngine
 import com.intelliexpense.app.core.util.IndianCurrencyFormatter
 import com.intelliexpense.app.data.repository.FinancialRepository
-import com.intelliexpense.app.ui.theme.Amber500
-import com.intelliexpense.app.ui.theme.Blue500
-import com.intelliexpense.app.ui.theme.CardBorder
-import com.intelliexpense.app.ui.theme.Emerald500
-import com.intelliexpense.app.ui.theme.Rose500
-import com.intelliexpense.app.ui.theme.Slate400
-import com.intelliexpense.app.ui.theme.Slate800
-import com.intelliexpense.app.ui.theme.Slate850
-import com.intelliexpense.app.ui.theme.Slate900
+import com.intelliexpense.app.ui.theme.LocalAppColors
 import java.util.Locale
 
 @Composable
 fun AnalyticsScreen(repository: FinancialRepository) {
+    val colors = LocalAppColors.current
+
     val transactions by repository.getAllTransactionsFlow().collectAsState(initial = emptyList())
     val categories by repository.getAllCategoriesFlow().collectAsState(initial = emptyList())
     val accounts by repository.getAllAccountsFlow().collectAsState(initial = emptyList())
@@ -70,7 +65,7 @@ fun AnalyticsScreen(repository: FinancialRepository) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .background(Slate900)
+            .background(colors.background)
             .padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
@@ -80,12 +75,12 @@ fun AnalyticsScreen(repository: FinancialRepository) {
                 text = "Financial Intelligence",
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.White
+                color = colors.textPrimary
             )
             Text(
                 text = "Spending patterns, cash flow & credit health",
                 fontSize = 13.sp,
-                color = Slate400
+                color = colors.textSecondary
             )
         }
 
@@ -93,13 +88,13 @@ fun AnalyticsScreen(repository: FinancialRepository) {
         item {
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(20.dp),
-                colors = CardDefaults.cardColors(containerColor = Slate850),
-                border = androidx.compose.foundation.BorderStroke(1.dp, CardBorder)
+                shape = RoundedCornerShape(22.dp),
+                colors = CardDefaults.cardColors(containerColor = colors.surface),
+                border = BorderStroke(1.dp, colors.cardBorder)
             ) {
-                Column(modifier = Modifier.padding(18.dp)) {
-                    Text("Cash Flow (Current Month)", fontSize = 13.sp, color = Slate400, fontWeight = FontWeight.Medium)
-                    Spacer(modifier = Modifier.height(12.dp))
+                Column(modifier = Modifier.padding(20.dp)) {
+                    Text("Cash Flow (Current Month)", fontSize = 13.sp, color = colors.textSecondary, fontWeight = FontWeight.Medium)
+                    Spacer(modifier = Modifier.height(14.dp))
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -108,20 +103,20 @@ fun AnalyticsScreen(repository: FinancialRepository) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Box(
                                 modifier = Modifier
-                                    .size(32.dp)
-                                    .background(Emerald500.copy(alpha = 0.15f), CircleShape),
+                                    .size(34.dp)
+                                    .background(colors.incomeGreen.copy(alpha = 0.15f), CircleShape),
                                 contentAlignment = Alignment.Center
                             ) {
-                                Icon(Icons.Default.ArrowDownward, contentDescription = null, tint = Emerald500, modifier = Modifier.size(16.dp))
+                                Icon(Icons.Default.ArrowDownward, contentDescription = null, tint = colors.incomeGreen, modifier = Modifier.size(17.dp))
                             }
-                            Spacer(modifier = Modifier.width(8.dp))
+                            Spacer(modifier = Modifier.width(10.dp))
                             Column {
-                                Text("Inflow (Income)", fontSize = 11.sp, color = Slate400)
+                                Text("Inflow (Income)", fontSize = 11.sp, color = colors.textSecondary)
                                 Text(
                                     IndianCurrencyFormatter.format(analytics.totalIncome, false),
-                                    fontSize = 16.sp,
+                                    fontSize = 17.sp,
                                     fontWeight = FontWeight.Bold,
-                                    color = Emerald500
+                                    color = colors.incomeGreen
                                 )
                             }
                         }
@@ -129,44 +124,44 @@ fun AnalyticsScreen(repository: FinancialRepository) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Box(
                                 modifier = Modifier
-                                    .size(32.dp)
-                                    .background(Rose500.copy(alpha = 0.15f), CircleShape),
+                                    .size(34.dp)
+                                    .background(colors.expenseRed.copy(alpha = 0.15f), CircleShape),
                                 contentAlignment = Alignment.Center
                             ) {
-                                Icon(Icons.Default.ArrowUpward, contentDescription = null, tint = Rose500, modifier = Modifier.size(16.dp))
+                                Icon(Icons.Default.ArrowUpward, contentDescription = null, tint = colors.expenseRed, modifier = Modifier.size(17.dp))
                             }
-                            Spacer(modifier = Modifier.width(8.dp))
+                            Spacer(modifier = Modifier.width(10.dp))
                             Column {
-                                Text("Outflow (Spend)", fontSize = 11.sp, color = Slate400)
+                                Text("Outflow (Spend)", fontSize = 11.sp, color = colors.textSecondary)
                                 Text(
                                     IndianCurrencyFormatter.format(analytics.totalExpense, false),
-                                    fontSize = 16.sp,
+                                    fontSize = 17.sp,
                                     fontWeight = FontWeight.Bold,
-                                    color = Color.White
+                                    color = colors.textPrimary
                                 )
                             }
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(14.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
 
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(Slate800, RoundedCornerShape(12.dp))
-                            .padding(12.dp)
+                            .background(colors.surfaceElevated, RoundedCornerShape(14.dp))
+                            .padding(14.dp)
                     ) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text("Net Savings Rate", fontSize = 13.sp, color = Color.White)
+                            Text("Net Savings Rate", fontSize = 13.sp, color = colors.textPrimary)
                             Text(
                                 "${String.format(Locale.ENGLISH, "%.1f", analytics.savingsRate)}%",
-                                fontSize = 15.sp,
+                                fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = if (analytics.savingsRate >= 20f) Emerald500 else Amber500
+                                color = if (analytics.savingsRate >= 20f) colors.incomeGreen else colors.accentAmber
                             )
                         }
                     }
@@ -179,30 +174,30 @@ fun AnalyticsScreen(repository: FinancialRepository) {
             val comp = analytics.monthComparison
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(18.dp),
-                colors = CardDefaults.cardColors(containerColor = Slate850),
-                border = androidx.compose.foundation.BorderStroke(1.dp, CardBorder)
+                shape = RoundedCornerShape(20.dp),
+                colors = CardDefaults.cardColors(containerColor = colors.surface),
+                border = BorderStroke(1.dp, colors.cardBorder)
             ) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp),
+                        .padding(18.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Box(
                         modifier = Modifier
-                            .size(40.dp)
+                            .size(42.dp)
                             .background(
-                                if (comp.isHigher) Rose500.copy(alpha = 0.15f) else Emerald500.copy(alpha = 0.15f),
+                                if (comp.isHigher) colors.expenseRed.copy(alpha = 0.15f) else colors.incomeGreen.copy(alpha = 0.15f),
                                 CircleShape
                             ),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
-                            if (comp.isHigher) Icons.Default.TrendingUp else Icons.Default.TrendingDown,
+                            if (comp.isHigher) Icons.AutoMirrored.Filled.TrendingUp else Icons.AutoMirrored.Filled.TrendingDown,
                             contentDescription = null,
-                            tint = if (comp.isHigher) Rose500 else Emerald500,
-                            modifier = Modifier.size(20.dp)
+                            tint = if (comp.isHigher) colors.expenseRed else colors.incomeGreen,
+                            modifier = Modifier.size(22.dp)
                         )
                     }
                     Spacer(modifier = Modifier.width(14.dp))
@@ -211,12 +206,12 @@ fun AnalyticsScreen(repository: FinancialRepository) {
                             text = if (comp.isHigher) "Spending is ${String.format(Locale.ENGLISH, "%.1f", comp.percentageChange)}% higher" else "Spending is ${String.format(Locale.ENGLISH, "%.1f", comp.percentageChange)}% lower",
                             fontWeight = FontWeight.Bold,
                             fontSize = 15.sp,
-                            color = Color.White
+                            color = colors.textPrimary
                         )
                         Text(
                             text = "Compared to ${IndianCurrencyFormatter.format(comp.previousMonthSpend, false)} last month",
                             fontSize = 12.sp,
-                            color = Slate400
+                            color = colors.textSecondary
                         )
                     }
                 }
@@ -227,24 +222,24 @@ fun AnalyticsScreen(repository: FinancialRepository) {
         item {
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(20.dp),
-                colors = CardDefaults.cardColors(containerColor = Slate850),
-                border = androidx.compose.foundation.BorderStroke(1.dp, CardBorder)
+                shape = RoundedCornerShape(22.dp),
+                colors = CardDefaults.cardColors(containerColor = colors.surface),
+                border = BorderStroke(1.dp, colors.cardBorder)
             ) {
-                Column(modifier = Modifier.padding(18.dp)) {
+                Column(modifier = Modifier.padding(20.dp)) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text("Category Breakdown", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.White)
-                        Icon(Icons.Default.PieChart, contentDescription = null, tint = Emerald500, modifier = Modifier.size(18.dp))
+                        Text("Category Breakdown", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = colors.textPrimary)
+                        Icon(Icons.Default.PieChart, contentDescription = null, tint = colors.primary, modifier = Modifier.size(20.dp))
                     }
 
                     Spacer(modifier = Modifier.height(14.dp))
 
                     if (analytics.categoryBreakdown.isEmpty()) {
-                        Text("No expense categories to display.", color = Slate400, fontSize = 13.sp)
+                        Text("No expense categories to display.", color = colors.textSecondary, fontSize = 13.sp)
                     } else {
                         analytics.categoryBreakdown.forEach { item ->
                             Column(modifier = Modifier.padding(vertical = 6.dp)) {
@@ -252,23 +247,23 @@ fun AnalyticsScreen(repository: FinancialRepository) {
                                     modifier = Modifier.fillMaxWidth(),
                                     horizontalArrangement = Arrangement.SpaceBetween
                                 ) {
-                                    Text(item.categoryName, fontSize = 13.sp, color = Color.White)
+                                    Text(item.categoryName, fontSize = 13.sp, color = colors.textPrimary)
                                     Text(
                                         "${IndianCurrencyFormatter.format(item.totalAmount, false)} (${String.format(Locale.ENGLISH, "%.0f", item.percentage)}%)",
                                         fontSize = 13.sp,
                                         fontWeight = FontWeight.SemiBold,
-                                        color = Slate400
+                                        color = colors.textSecondary
                                     )
                                 }
-                                Spacer(modifier = Modifier.height(5.dp))
+                                Spacer(modifier = Modifier.height(6.dp))
                                 LinearProgressIndicator(
                                     progress = { item.percentage / 100f },
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .height(6.dp)
                                         .clip(RoundedCornerShape(3.dp)),
-                                    color = Emerald500,
-                                    trackColor = Slate800
+                                    color = colors.primary,
+                                    trackColor = colors.surfaceElevated
                                 )
                             }
                         }
@@ -281,16 +276,16 @@ fun AnalyticsScreen(repository: FinancialRepository) {
         item {
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(20.dp),
-                colors = CardDefaults.cardColors(containerColor = Slate850),
-                border = androidx.compose.foundation.BorderStroke(1.dp, CardBorder)
+                shape = RoundedCornerShape(22.dp),
+                colors = CardDefaults.cardColors(containerColor = colors.surface),
+                border = BorderStroke(1.dp, colors.cardBorder)
             ) {
-                Column(modifier = Modifier.padding(18.dp)) {
-                    Text("Top Spending Destinations", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.White)
-                    Spacer(modifier = Modifier.height(12.dp))
+                Column(modifier = Modifier.padding(20.dp)) {
+                    Text("Top Spending Destinations", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = colors.textPrimary)
+                    Spacer(modifier = Modifier.height(14.dp))
 
                     if (analytics.topMerchants.isEmpty()) {
-                        Text("No merchant data yet.", color = Slate400, fontSize = 13.sp)
+                        Text("No merchant data yet.", color = colors.textSecondary, fontSize = 13.sp)
                     } else {
                         analytics.topMerchants.forEachIndexed { index, merchant ->
                             Row(
@@ -303,21 +298,21 @@ fun AnalyticsScreen(repository: FinancialRepository) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Text(
                                         "${index + 1}.",
-                                        fontSize = 13.sp,
+                                        fontSize = 14.sp,
                                         fontWeight = FontWeight.Bold,
-                                        color = Emerald500
+                                        color = colors.primary
                                     )
-                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Spacer(modifier = Modifier.width(10.dp))
                                     Column {
-                                        Text(merchant.merchantName, fontSize = 14.sp, fontWeight = FontWeight.Medium, color = Color.White)
-                                        Text("${merchant.transactionCount} transactions", fontSize = 11.sp, color = Slate400)
+                                        Text(merchant.merchantName, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = colors.textPrimary)
+                                        Text("${merchant.transactionCount} transactions", fontSize = 11.sp, color = colors.textSecondary)
                                     }
                                 }
                                 Text(
                                     IndianCurrencyFormatter.format(merchant.totalAmount, false),
                                     fontSize = 14.sp,
                                     fontWeight = FontWeight.Bold,
-                                    color = Color.White
+                                    color = colors.textPrimary
                                 )
                             }
                         }
@@ -331,20 +326,20 @@ fun AnalyticsScreen(repository: FinancialRepository) {
             item {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(20.dp),
-                    colors = CardDefaults.cardColors(containerColor = Slate850),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, CardBorder)
+                    shape = RoundedCornerShape(22.dp),
+                    colors = CardDefaults.cardColors(containerColor = colors.surface),
+                    border = BorderStroke(1.dp, colors.cardBorder)
                 ) {
-                    Column(modifier = Modifier.padding(18.dp)) {
+                    Column(modifier = Modifier.padding(20.dp)) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text("Credit Card Utilization", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.White)
-                            Icon(Icons.Default.CreditCard, contentDescription = null, tint = Blue500, modifier = Modifier.size(18.dp))
+                            Text("Credit Card Utilization", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = colors.textPrimary)
+                            Icon(Icons.Default.CreditCard, contentDescription = null, tint = colors.secondary, modifier = Modifier.size(20.dp))
                         }
-                        Spacer(modifier = Modifier.height(10.dp))
+                        Spacer(modifier = Modifier.height(12.dp))
 
                         cardStatuses.forEach { card ->
                             Column(modifier = Modifier.padding(vertical = 6.dp)) {
@@ -352,19 +347,19 @@ fun AnalyticsScreen(repository: FinancialRepository) {
                                     modifier = Modifier.fillMaxWidth(),
                                     horizontalArrangement = Arrangement.SpaceBetween
                                 ) {
-                                    Text(card.cardName, fontSize = 13.sp, color = Color.White)
+                                    Text(card.cardName, fontSize = 13.sp, color = colors.textPrimary)
                                     Text(
                                         "${card.health.label} • ${String.format(Locale.ENGLISH, "%.0f", card.utilizationPercentage)}%",
                                         fontSize = 12.sp,
-                                        color = if (card.utilizationPercentage <= 30f) Emerald500 else Amber500,
+                                        color = if (card.utilizationPercentage <= 30f) colors.incomeGreen else colors.accentAmber,
                                         fontWeight = FontWeight.Bold
                                     )
                                 }
-                                Spacer(modifier = Modifier.height(4.dp))
+                                Spacer(modifier = Modifier.height(5.dp))
                                 Text(
                                     "Outstanding: ${IndianCurrencyFormatter.format(card.outstandingBalance, false)} of ${IndianCurrencyFormatter.format(card.creditLimit, false)}",
                                     fontSize = 12.sp,
-                                    color = Slate400
+                                    color = colors.textSecondary
                                 )
                             }
                         }

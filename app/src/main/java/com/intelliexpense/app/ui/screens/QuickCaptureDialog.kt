@@ -49,12 +49,7 @@ import com.intelliexpense.app.data.model.AccountEntity
 import com.intelliexpense.app.data.model.CategoryEntity
 import com.intelliexpense.app.data.model.TransactionEntity
 import com.intelliexpense.app.data.repository.FinancialRepository
-import com.intelliexpense.app.ui.theme.CardBorder
-import com.intelliexpense.app.ui.theme.Emerald500
-import com.intelliexpense.app.ui.theme.Slate400
-import com.intelliexpense.app.ui.theme.Slate800
-import com.intelliexpense.app.ui.theme.Slate850
-import com.intelliexpense.app.ui.theme.Slate900
+import com.intelliexpense.app.ui.theme.LocalAppColors
 import kotlinx.coroutines.launch
 import java.util.UUID
 
@@ -65,6 +60,7 @@ fun QuickCaptureDialog(
     repository: FinancialRepository,
     onDismiss: () -> Unit
 ) {
+    val colors = LocalAppColors.current
     val coroutineScope = rememberCoroutineScope()
     var selectedTab by remember { mutableIntStateOf(0) }
 
@@ -85,8 +81,8 @@ fun QuickCaptureDialog(
         Card(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(24.dp),
-            colors = CardDefaults.cardColors(containerColor = Slate900),
-            border = androidx.compose.foundation.BorderStroke(1.dp, CardBorder)
+            colors = CardDefaults.cardColors(containerColor = colors.surface),
+            border = androidx.compose.foundation.BorderStroke(1.dp, colors.cardBorder)
         ) {
             Column(modifier = Modifier.padding(20.dp)) {
                 // Header
@@ -99,10 +95,10 @@ fun QuickCaptureDialog(
                         text = "Quick Record Expense",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White
+                        color = colors.textPrimary
                     )
                     IconButton(onClick = onDismiss) {
-                        Icon(Icons.Default.Close, contentDescription = "Close", tint = Slate400)
+                        Icon(Icons.Default.Close, contentDescription = "Close", tint = colors.textSecondary)
                     }
                 }
 
@@ -111,8 +107,8 @@ fun QuickCaptureDialog(
                 // Tab Row
                 TabRow(
                     selectedTabIndex = selectedTab,
-                    containerColor = Slate850,
-                    contentColor = Emerald500
+                    containerColor = colors.surfaceElevated,
+                    contentColor = colors.primary
                 ) {
                     Tab(
                         selected = selectedTab == 0,
@@ -121,7 +117,7 @@ fun QuickCaptureDialog(
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Icon(Icons.Default.AutoAwesome, contentDescription = null, modifier = Modifier.size(16.dp))
                                 Spacer(modifier = Modifier.width(6.dp))
-                                Text("Smart Entry")
+                                Text("Smart Entry", color = if (selectedTab == 0) colors.primary else colors.textSecondary)
                             }
                         }
                     )
@@ -132,7 +128,7 @@ fun QuickCaptureDialog(
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Icon(Icons.Default.Edit, contentDescription = null, modifier = Modifier.size(16.dp))
                                 Spacer(modifier = Modifier.width(6.dp))
-                                Text("Manual Form")
+                                Text("Manual Form", color = if (selectedTab == 1) colors.primary else colors.textSecondary)
                             }
                         }
                     )
@@ -147,15 +143,15 @@ fun QuickCaptureDialog(
                         onValueChange = { nlInput = it },
                         modifier = Modifier.fillMaxWidth(),
                         placeholder = {
-                            Text("e.g. Swiggy 450 yesterday via HDFC, or 60 auto cash", color = Slate400, fontSize = 13.sp)
+                            Text("e.g. Swiggy 450 yesterday via HDFC, or 60 auto cash", color = colors.textSecondary, fontSize = 13.sp)
                         },
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = Emerald500,
-                            unfocusedBorderColor = Slate800,
-                            focusedTextColor = Color.White,
-                            unfocusedTextColor = Color.White,
-                            focusedContainerColor = Slate850,
-                            unfocusedContainerColor = Slate850
+                            focusedBorderColor = colors.primary,
+                            unfocusedBorderColor = colors.cardBorder,
+                            focusedTextColor = colors.textPrimary,
+                            unfocusedTextColor = colors.textPrimary,
+                            focusedContainerColor = colors.surfaceElevated,
+                            unfocusedContainerColor = colors.surfaceElevated
                         ),
                         shape = RoundedCornerShape(12.dp),
                         maxLines = 3
@@ -167,11 +163,11 @@ fun QuickCaptureDialog(
                         Card(
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(12.dp),
-                            colors = CardDefaults.cardColors(containerColor = Slate850),
-                            border = androidx.compose.foundation.BorderStroke(1.dp, Emerald500.copy(alpha = 0.4f))
+                            colors = CardDefaults.cardColors(containerColor = colors.surfaceElevated),
+                            border = androidx.compose.foundation.BorderStroke(1.dp, colors.primary.copy(alpha = 0.4f))
                         ) {
                             Column(modifier = Modifier.padding(14.dp)) {
-                                Text("Auto-Detected Preview", fontSize = 11.sp, color = Emerald500, fontWeight = FontWeight.Bold)
+                                Text("Auto-Detected Preview", fontSize = 11.sp, color = colors.primary, fontWeight = FontWeight.Bold)
                                 Spacer(modifier = Modifier.height(4.dp))
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
@@ -179,12 +175,12 @@ fun QuickCaptureDialog(
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Column {
-                                        Text(parsedPreview.merchantNormalized, color = Color.White, fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
-                                        Text("${parsedPreview.categoryId.replace('_', ' ')} • ${parsedPreview.paymentMethod}", color = Slate400, fontSize = 12.sp)
+                                        Text(parsedPreview.merchantNormalized, color = colors.textPrimary, fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
+                                        Text("${parsedPreview.categoryId.replace('_', ' ')} • ${parsedPreview.paymentMethod}", color = colors.textSecondary, fontSize = 12.sp)
                                     }
                                     Text(
                                         IndianCurrencyFormatter.format(parsedPreview.amount),
-                                        color = Emerald500,
+                                        color = colors.primary,
                                         fontWeight = FontWeight.ExtraBold,
                                         fontSize = 18.sp
                                     )
@@ -222,12 +218,12 @@ fun QuickCaptureDialog(
                         },
                         enabled = parsedPreview != null && parsedPreview.amount > 0,
                         modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(containerColor = Emerald500),
+                        colors = ButtonDefaults.buttonColors(containerColor = colors.primary),
                         shape = RoundedCornerShape(12.dp)
                     ) {
-                        Icon(Icons.Default.Check, contentDescription = null, tint = Color.Black)
+                        Icon(Icons.Default.Check, contentDescription = null, tint = if (colors.isDark) Color.Black else Color.White)
                         Spacer(modifier = Modifier.width(6.dp))
-                        Text("Save Transaction", color = Color.Black, fontWeight = FontWeight.Bold)
+                        Text("Save Transaction", color = if (colors.isDark) Color.Black else Color.White, fontWeight = FontWeight.Bold)
                     }
 
                 } else {
@@ -236,12 +232,12 @@ fun QuickCaptureDialog(
                         value = manualAmount,
                         onValueChange = { manualAmount = it },
                         modifier = Modifier.fillMaxWidth(),
-                        label = { Text("Amount (₹)") },
+                        label = { Text("Amount (₹)", color = colors.textSecondary) },
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = Emerald500,
-                            unfocusedBorderColor = Slate800,
-                            focusedTextColor = Color.White,
-                            unfocusedTextColor = Color.White
+                            focusedBorderColor = colors.primary,
+                            unfocusedBorderColor = colors.cardBorder,
+                            focusedTextColor = colors.textPrimary,
+                            unfocusedTextColor = colors.textPrimary
                         ),
                         shape = RoundedCornerShape(12.dp)
                     )
@@ -252,12 +248,12 @@ fun QuickCaptureDialog(
                         value = manualMerchant,
                         onValueChange = { manualMerchant = it },
                         modifier = Modifier.fillMaxWidth(),
-                        label = { Text("Merchant / Description") },
+                        label = { Text("Merchant / Description", color = colors.textSecondary) },
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = Emerald500,
-                            unfocusedBorderColor = Slate800,
-                            focusedTextColor = Color.White,
-                            unfocusedTextColor = Color.White
+                            focusedBorderColor = colors.primary,
+                            unfocusedBorderColor = colors.cardBorder,
+                            focusedTextColor = colors.textPrimary,
+                            unfocusedTextColor = colors.textPrimary
                         ),
                         shape = RoundedCornerShape(12.dp)
                     )
@@ -291,12 +287,12 @@ fun QuickCaptureDialog(
                         },
                         enabled = manualAmount.toDoubleOrNull() != null && (manualAmount.toDoubleOrNull() ?: 0.0) > 0,
                         modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(containerColor = Emerald500),
+                        colors = ButtonDefaults.buttonColors(containerColor = colors.primary),
                         shape = RoundedCornerShape(12.dp)
                     ) {
-                        Icon(Icons.Default.Check, contentDescription = null, tint = Color.Black)
+                        Icon(Icons.Default.Check, contentDescription = null, tint = if (colors.isDark) Color.Black else Color.White)
                         Spacer(modifier = Modifier.width(6.dp))
-                        Text("Save Transaction", color = Color.Black, fontWeight = FontWeight.Bold)
+                        Text("Save Transaction", color = if (colors.isDark) Color.Black else Color.White, fontWeight = FontWeight.Bold)
                     }
                 }
             }

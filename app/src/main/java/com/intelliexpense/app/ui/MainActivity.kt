@@ -37,17 +37,16 @@ import com.intelliexpense.app.ui.screens.AskYourMoneyScreen
 import com.intelliexpense.app.ui.screens.DashboardScreen
 import com.intelliexpense.app.ui.screens.ManageHubScreen
 import com.intelliexpense.app.ui.screens.OnboardingScreen
+import androidx.compose.material.icons.automirrored.filled.ReceiptLong
 import com.intelliexpense.app.ui.screens.PrivacyCenterScreen
 import com.intelliexpense.app.ui.screens.TransactionsScreen
-import com.intelliexpense.app.ui.theme.Emerald500
 import com.intelliexpense.app.ui.theme.IntelliExpenseTheme
-import com.intelliexpense.app.ui.theme.Slate400
-import com.intelliexpense.app.ui.theme.Slate850
-import com.intelliexpense.app.ui.theme.Slate900
+import com.intelliexpense.app.ui.theme.LocalAppColors
+import com.intelliexpense.app.ui.theme.ThemeMode
 
 sealed class Screen(val title: String, val icon: ImageVector) {
     object Dashboard : Screen("Dashboard", Icons.Default.Dashboard)
-    object Transactions : Screen("Ledger", Icons.Default.ReceiptLong)
+    object Transactions : Screen("Ledger", Icons.AutoMirrored.Filled.ReceiptLong)
     object Analytics : Screen("Analytics", Icons.Default.Analytics)
     object AskAi : Screen("Ask Money", Icons.Default.AutoAwesome)
     object Manage : Screen("Manage", Icons.Default.Settings)
@@ -61,12 +60,16 @@ class MainActivity : ComponentActivity() {
         val app = applicationContext as IntelliExpenseApp
         val prefs = getSharedPreferences("intelliexpense_settings", Context.MODE_PRIVATE)
         val isOnboardingCompleted = prefs.getBoolean("onboarding_completed", false)
+        val savedThemeId = prefs.getString("selected_theme", ThemeMode.CYBER_OBSIDIAN.id)
 
         setContent {
-            IntelliExpenseTheme {
+            var currentTheme by remember { mutableStateOf(ThemeMode.fromId(savedThemeId)) }
+
+            IntelliExpenseTheme(themeMode = currentTheme) {
+                val colors = com.intelliexpense.app.ui.theme.LocalAppColors.current
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = Slate900
+                    color = colors.background
                 ) {
                     var isCompleted by remember { mutableStateOf(isOnboardingCompleted) }
 
@@ -78,7 +81,14 @@ class MainActivity : ComponentActivity() {
                             }
                         )
                     } else {
-                        MainAppContent(app = app)
+                        MainAppContent(
+                            app = app,
+                            currentTheme = currentTheme,
+                            onThemeSelected = { newTheme ->
+                                currentTheme = newTheme
+                                prefs.edit().putString("selected_theme", newTheme.id).apply()
+                            }
+                        )
                     }
                 }
             }
@@ -87,10 +97,15 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun MainAppContent(app: IntelliExpenseApp) {
+fun MainAppContent(
+    app: IntelliExpenseApp,
+    currentTheme: ThemeMode,
+    onThemeSelected: (ThemeMode) -> Unit
+) {
     var selectedTab by remember { mutableIntStateOf(0) }
     var showPrivacyCenter by remember { mutableStateOf(false) }
     var filterUnreviewedInTransactions by remember { mutableStateOf(false) }
+    val colors = com.intelliexpense.app.ui.theme.LocalAppColors.current
 
     val navItems = listOf(
         Screen.Dashboard,
@@ -104,14 +119,16 @@ fun MainAppContent(app: IntelliExpenseApp) {
         PrivacyCenterScreen(
             privacyManager = app.privacyManager,
             repository = app.repository,
+            currentTheme = currentTheme,
+            onThemeSelected = onThemeSelected,
             onBack = { showPrivacyCenter = false }
         )
     } else {
         Scaffold(
             bottomBar = {
                 NavigationBar(
-                    containerColor = Slate850,
-                    contentColor = Emerald500
+                    containerColor = colors.surface,
+                    contentColor = colors.primary
                 ) {
                     navItems.forEachIndexed { index, screen ->
                         NavigationBarItem(
@@ -133,17 +150,17 @@ fun MainAppContent(app: IntelliExpenseApp) {
                                 Text(screen.title, fontSize = 11.sp)
                             },
                             colors = NavigationBarItemDefaults.colors(
-                                selectedIconColor = Color.Black,
-                                selectedTextColor = Emerald500,
-                                unselectedIconColor = Slate400,
-                                unselectedTextColor = Slate400,
-                                indicatorColor = Emerald500
+                                selectedIconColor = if (colors.isDark) Color.Black else Color.White,
+                                selectedTextColor = colors.primary,
+                                unselectedIconColor = colors.textSecondary,
+                                unselectedTextColor = colors.textSecondary,
+                                indicatorColor = colors.primary
                             )
                         )
                     }
                 }
             },
-            containerColor = Slate900
+            containerColor = colors.background
         ) { paddingValues ->
             androidx.compose.foundation.layout.Box(
                 modifier = Modifier

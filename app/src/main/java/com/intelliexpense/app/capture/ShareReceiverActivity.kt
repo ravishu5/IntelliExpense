@@ -51,10 +51,9 @@ import com.intelliexpense.app.IntelliExpenseApp
 import com.intelliexpense.app.core.util.IndianCurrencyFormatter
 import com.intelliexpense.app.data.model.AccountEntity
 import com.intelliexpense.app.data.model.TransactionEntity
-import com.intelliexpense.app.ui.theme.Emerald500
 import com.intelliexpense.app.ui.theme.IntelliExpenseTheme
-import com.intelliexpense.app.ui.theme.Slate800
-import com.intelliexpense.app.ui.theme.Slate900
+import com.intelliexpense.app.ui.theme.LocalAppColors
+import com.intelliexpense.app.ui.theme.ThemeMode
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -65,8 +64,12 @@ class ShareReceiverActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        val prefs = getSharedPreferences("intelliexpense_settings", MODE_PRIVATE)
+        val savedThemeId = prefs.getString("selected_theme", ThemeMode.CYBER_OBSIDIAN.id)
+        val currentTheme = ThemeMode.fromId(savedThemeId)
+
         setContent {
-            IntelliExpenseTheme {
+            IntelliExpenseTheme(themeMode = currentTheme) {
                 Surface(
                     color = Color.Black.copy(alpha = 0.6f),
                     modifier = Modifier.padding(16.dp)
@@ -91,6 +94,7 @@ fun ShareReceiverScreen(
     onDismiss: () -> Unit,
     onSaved: () -> Unit
 ) {
+    val colors = LocalAppColors.current
     val coroutineScope = rememberCoroutineScope()
     var isLoading by remember { mutableStateOf(true) }
     var parsedResult by remember { mutableStateOf<ParsedCaptureResult?>(null) }
@@ -144,9 +148,10 @@ fun ShareReceiverScreen(
         contentAlignment = Alignment.Center
     ) {
         Card(
-            modifier = Modifier.fillMaxWidth(0.95f),
+            modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(24.dp),
-            colors = CardDefaults.cardColors(containerColor = Slate900)
+            colors = CardDefaults.cardColors(containerColor = colors.surface),
+            border = androidx.compose.foundation.BorderStroke(1.dp, colors.cardBorder)
         ) {
             Column(
                 modifier = Modifier.padding(24.dp),
@@ -161,13 +166,13 @@ fun ShareReceiverScreen(
                         Box(
                             modifier = Modifier
                                 .size(36.dp)
-                                .background(Emerald500.copy(alpha = 0.2f), CircleShape),
+                                .background(colors.primary.copy(alpha = 0.2f), CircleShape),
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
                                 Icons.Default.Receipt,
                                 contentDescription = null,
-                                tint = Emerald500,
+                                tint = colors.primary,
                                 modifier = Modifier.size(20.dp)
                             )
                         }
@@ -176,20 +181,20 @@ fun ShareReceiverScreen(
                             text = "Auto Capture",
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color.White
+                            color = colors.textPrimary
                         )
                     }
                     IconButton(onClick = onDismiss) {
-                        Icon(Icons.Default.Close, contentDescription = "Close", tint = Color.Gray)
+                        Icon(Icons.Default.Close, contentDescription = "Close", tint = colors.textSecondary)
                     }
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
                 if (isLoading) {
-                    CircularProgressIndicator(color = Emerald500)
+                    CircularProgressIndicator(color = colors.primary)
                     Spacer(modifier = Modifier.height(12.dp))
-                    Text("Analyzing receipt...", color = Color.LightGray)
+                    Text("Analyzing receipt...", color = colors.textSecondary)
                 } else if (parsedResult != null) {
                     val res = parsedResult!!
 
@@ -197,14 +202,14 @@ fun ShareReceiverScreen(
                         text = IndianCurrencyFormatter.format(res.amount),
                         fontSize = 32.sp,
                         fontWeight = FontWeight.ExtraBold,
-                        color = Emerald500
+                        color = colors.primary
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
                         text = res.merchantNormalized,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color = Color.White
+                        color = colors.textPrimary
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
@@ -233,7 +238,7 @@ fun ShareReceiverScreen(
                             modifier = Modifier.weight(1f),
                             shape = RoundedCornerShape(12.dp)
                         ) {
-                            Text("Discard", color = Color.LightGray)
+                            Text("Discard", color = colors.textSecondary)
                         }
 
                         Button(
@@ -262,18 +267,18 @@ fun ShareReceiverScreen(
                                 }
                             },
                             modifier = Modifier.weight(1f),
-                            colors = ButtonDefaults.buttonColors(containerColor = Emerald500),
+                            colors = ButtonDefaults.buttonColors(containerColor = colors.primary),
                             shape = RoundedCornerShape(12.dp)
                         ) {
-                            Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(18.dp))
+                            Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(18.dp), tint = if (colors.isDark) Color.Black else Color.White)
                             Spacer(modifier = Modifier.width(6.dp))
-                            Text("Save Expense", color = Color.Black, fontWeight = FontWeight.Bold)
+                            Text("Save Expense", color = if (colors.isDark) Color.Black else Color.White, fontWeight = FontWeight.Bold)
                         }
                     }
                 } else {
                     Text(
                         text = errorMessage ?: "No transaction detected.",
-                        color = Color.Red,
+                        color = colors.expenseRed,
                         fontSize = 14.sp
                     )
                     Spacer(modifier = Modifier.height(16.dp))
