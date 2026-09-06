@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="./logo.jpg" width="180" height="180" alt="IntelliExpense Logo" />
+</p>
+
 # IntelliExpense — Technical Architecture & System Design Document
 
 **IntelliExpense** is a production-grade, Android-first personal finance and expense tracking platform built specifically for India. It is architected around two non-negotiable design pillars: **Zero-Friction Automatic Expense Capture** and a **100% Privacy-First, Local-First Architecture**.
