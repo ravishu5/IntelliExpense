@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">IntelliExpense</string>
+    <string name="share_receiver_title">Expense Captured</string>
+    <string name="share_receiver_desc">IntelliExpense detected a transaction</string>
+</resources>
