@@ -127,6 +127,84 @@ val AlabasterPearlPalette = AppColorPalette(
     isDark = false
 )
 
+// Theme 5: Champagne Quartz (Apple Card Titanium & Burnished Gold Light)
+val ChampagneQuartzPalette = AppColorPalette(
+    background = Color(0xFFFAF7F2),
+    surface = Color(0xFFFFFFFF),
+    surfaceElevated = Color(0xFFF3EEE5),
+    cardBorder = Color(0xFFE8E0D2),
+    cardBorderGlow = Color(0x33B4833E),
+    primary = Color(0xFFB4833E),
+    primaryGlow = Color(0x20B4833E),
+    secondary = Color(0xFF8C5E26),
+    tertiary = Color(0xFF6B6358),
+    accentAmber = Color(0xFFD97706),
+    expenseRed = Color(0xFFC53030),
+    incomeGreen = Color(0xFF1B8755),
+    textPrimary = Color(0xFF1A1714),
+    textSecondary = Color(0xFF6E675F),
+    textMuted = Color(0xFFA8A096),
+    heroGradient = Brush.linearGradient(
+        listOf(
+            Color(0xFFFFFDF9),
+            Color(0xFFF5EFE4)
+        )
+    ),
+    isDark = false
+)
+
+// Theme 6: Nordic Cobalt (Silicon Valley Fintech / Stripe & Mercury Light)
+val NordicCobaltPalette = AppColorPalette(
+    background = Color(0xFFF4F7FC),
+    surface = Color(0xFFFFFFFF),
+    surfaceElevated = Color(0xFFEBF1F8),
+    cardBorder = Color(0xFFDDE5F0),
+    cardBorderGlow = Color(0x334F46E5),
+    primary = Color(0xFF4F46E5),
+    primaryGlow = Color(0x204F46E5),
+    secondary = Color(0xFF0284C7),
+    tertiary = Color(0xFF0F766E),
+    accentAmber = Color(0xFFD97706),
+    expenseRed = Color(0xFFDC2626),
+    incomeGreen = Color(0xFF059669),
+    textPrimary = Color(0xFF0B132B),
+    textSecondary = Color(0xFF475569),
+    textMuted = Color(0xFF94A3B8),
+    heroGradient = Brush.linearGradient(
+        listOf(
+            Color(0xFFEEF4FF),
+            Color(0xFFFFFFFF)
+        )
+    ),
+    isDark = false
+)
+
+// Theme 7: Rose Gold Silk (Haute Horlogerie / Soft Rose Cashmere Light)
+val RoseGoldSilkPalette = AppColorPalette(
+    background = Color(0xFFFAF5F6),
+    surface = Color(0xFFFFFFFF),
+    surfaceElevated = Color(0xFFF5EAEF),
+    cardBorder = Color(0xFFEBD9E1),
+    cardBorderGlow = Color(0x33BE185D),
+    primary = Color(0xFFBE185D),
+    primaryGlow = Color(0x20BE185D),
+    secondary = Color(0xFF831843),
+    tertiary = Color(0xFF7C3AED),
+    accentAmber = Color(0xFFD97706),
+    expenseRed = Color(0xFFBE123C),
+    incomeGreen = Color(0xFF047857),
+    textPrimary = Color(0xFF1F0E17),
+    textSecondary = Color(0xFF6B5B65),
+    textMuted = Color(0xFFA3949D),
+    heroGradient = Brush.linearGradient(
+        listOf(
+            Color(0xFFFDF2F8),
+            Color(0xFFFFFFFF)
+        )
+    ),
+    isDark = false
+)
+
 // Legacy alias compatibility for existing components
 val Slate950 = CyberObsidianPalette.background
 val Slate900 = CyberObsidianPalette.background

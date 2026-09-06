@@ -168,7 +168,20 @@ fun PrivacyCenterScreen(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    ThemeMode.entries.forEach { mode ->
+                    val darkThemes = ThemeMode.entries.filter { it.isDarkTheme }
+                    val lightThemes = ThemeMode.entries.filter { !it.isDarkTheme }
+
+                    // Dark Themes Section
+                    Text(
+                        text = "LUXURY DARK PALETTES",
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = colors.textSecondary,
+                        letterSpacing = 1.sp,
+                        modifier = Modifier.padding(top = 4.dp, bottom = 4.dp)
+                    )
+
+                    darkThemes.forEach { mode ->
                         val isSelected = currentTheme == mode
                         Card(
                             modifier = Modifier
@@ -192,7 +205,85 @@ fun PrivacyCenterScreen(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
-                                    // Color swatch preview circle
+                                    Box(
+                                        modifier = Modifier
+                                            .size(28.dp)
+                                            .clip(CircleShape)
+                                            .background(mode.previewBackground)
+                                            .border(2.dp, mode.previewPrimary, CircleShape),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Box(
+                                            modifier = Modifier
+                                                .size(10.dp)
+                                                .clip(CircleShape)
+                                                .background(mode.previewPrimary)
+                                        )
+                                    }
+                                    Spacer(modifier = Modifier.width(12.dp))
+                                    Column {
+                                        Text(
+                                            mode.displayName,
+                                            fontSize = 14.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = colors.textPrimary
+                                        )
+                                        Text(
+                                            mode.subtitle,
+                                            fontSize = 11.sp,
+                                            color = colors.textSecondary
+                                        )
+                                    }
+                                }
+
+                                if (isSelected) {
+                                    Icon(
+                                        Icons.Default.Check,
+                                        contentDescription = "Selected",
+                                        tint = colors.primary,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    // Premium Light Themes Section
+                    Text(
+                        text = "PREMIUM LIGHT PALETTES",
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = colors.primary,
+                        letterSpacing = 1.sp,
+                        modifier = Modifier.padding(top = 4.dp, bottom = 4.dp)
+                    )
+
+                    lightThemes.forEach { mode ->
+                        val isSelected = currentTheme == mode
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 4.dp)
+                                .clickable { onThemeSelected(mode) },
+                            shape = RoundedCornerShape(14.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = if (isSelected) colors.surfaceElevated else colors.background
+                            ),
+                            border = BorderStroke(
+                                1.5.dp,
+                                if (isSelected) colors.primary else colors.cardBorder
+                            )
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(14.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
                                     Box(
                                         modifier = Modifier
                                             .size(28.dp)
